@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="default">
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- A testing model that includes the Velodyne sensor model -->
+    <model name="my_robot">
+      <include>
+        <uri>./my_robot</uri>
+      </include>
+
+      <!-- Attach the plugin to this model -->
+      <plugin name="launch_control" filename="../../launch_plugin/build/liblaunch_plugin.so">
+        <velocity1>2.5</velocity1>
+        <velocity2>0</velocity2>
+      </plugin>
+    </model>
+
+  </world>
+</sdf>
