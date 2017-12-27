@@ -18,8 +18,6 @@
 
       <!-- Attach the plugin to this model -->
       <plugin name="launch_control" filename="../../launch_plugin/build/liblaunch_plugin.so">
-        <velocity1>2.5</velocity1>
-        <velocity2>0</velocity2>
       </plugin>
     </model>
 

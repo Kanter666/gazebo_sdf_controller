@@ -3,6 +3,8 @@
 
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
+#include <gazebo/transport/transport.hh>
+#include <gazebo/msgs/msgs.hh>
 
 namespace gazebo
 {
@@ -28,6 +30,7 @@ namespace gazebo
       // having one joint that is the rotational joint.
       this->joint1 = _model->GetJoints()[0];
       this->joint2 = _model->GetJoints()[1];
+      std::cout << "Joints: " << _model->GetJointCount();
 
       // Setup a P-controller, with a gain of 0.1.
       this->pid = common::PID(0.1, 0, 0);
@@ -38,22 +41,25 @@ namespace gazebo
       this->model->GetJointController()->SetVelocityPID(
           this->joint2->GetScopedName(), this->pid);
 
-      // Default to zero velocity
-      double velocity1 = 0;
-      double velocity2 = 0;
+      std::cout << "Gazebo: " << GAZEBO_MAJOR_VERSION;
+      // Create the node
+      this->node = transport::NodePtr(new transport::Node());
+      this->node->Init(this->model->GetWorld()->GetName());
 
-      // Check that the velocity element exists, then read the value
-      if (_sdf->HasElement("velocity1"))
-        velocity1 = _sdf->Get<double>("velocity1");
-      if (_sdf->HasElement("velocity2"))
-        velocity2 = _sdf->Get<double>("velocity2");
+      std::cout << "Name: " << this->model->GetName();
+      // Create a topic name
+      std::string topicName1 = "~/" + this->model->GetName() + "/vel_cmd1";
 
-      // Set the joint's target velocity. This target velocity is just
-      // for demonstration purposes.
-      this->model->GetJointController()->SetVelocityTarget(
-          this->joint1->GetScopedName(), velocity1);
-      this->model->GetJointController()->SetVelocityTarget(
-          this->joint2->GetScopedName(), velocity2);
+      // Subscribe to the topic, and register a callback
+      this->sub1 = this->node->Subscribe(topicName1,
+         &LaunchPlugin::OnMsg1, this);
+
+      // Create a topic name
+      std::string topicName2 = "~/" + this->model->GetName() + "/vel_cmd2";
+
+      // Subscribe to the topic, and register a callback
+      this->sub2 = this->node->Subscribe(topicName2,
+         &LaunchPlugin::OnMsg2, this);
     }
 
     /// \brief Set the velocity of the Velodyne
@@ -74,11 +80,31 @@ namespace gazebo
           this->joint2->GetScopedName(), _vel);
     }
 
+    /// \brief Handle incoming message
+    /// \param[in] _msg Repurpose a vector3 message. This function will
+    /// only use the x component.
+    private: void OnMsg1(ConstVector3dPtr &_msg)
+    {
+      this->SetVelocity1(_msg->x());
+    }
+
+    /// \brief Handle incoming message
+    /// \param[in] _msg Repurpose a vector3 message. This function will
+    /// only use the x component.
+    private: void OnMsg2(ConstVector3dPtr &_msg)
+    {
+      this->SetVelocity2(_msg->x());
+    }
+
+
     /// \brief A node used for transport
     private: transport::NodePtr node;
 
     /// \brief A subscriber to a named topic.
-    private: transport::SubscriberPtr sub;
+    private: transport::SubscriberPtr sub1;
+
+    /// \brief A subscriber to a named topic.
+    private: transport::SubscriberPtr sub2;
 
     /// \brief Pointer to the model.
     private: physics::ModelPtr model;
