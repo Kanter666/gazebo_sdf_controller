@@ -1,5 +1,6 @@
 #include <string>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <gazebo/gazebo_config.h>
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
@@ -7,7 +8,7 @@
 #include <gazebo/gazebo_client.hh>
 
 /////////////////////////////////////////////////
-int publishVector(std::string topic,  double value)
+int publishVector(std::string topic,  std::vector<std::string> values)
 {
   // Load gazebo as a client
   gazebo::client::setup();
@@ -18,16 +19,16 @@ int publishVector(std::string topic,  double value)
 
   // Publish to the  velodyne topic
   gazebo::transport::PublisherPtr pub =
-    node->Advertise<gazebo::msgs::Vector3d>(topic);//"~/my_velodyne/vel_cmd"
+    node->Advertise<gazebo::msgs::GzString_V>(topic);//"~/my_velodyne/vel_cmd"
 
   // Wait for a subscriber to connect to this publisher
   pub->WaitForConnection();
 
   // Create a a vector3 message
-  gazebo::msgs::Vector3d msg;
+  gazebo::msgs::GzString_V msg;
 
-  // Set the velocity in the x-component
-  gazebo::msgs::Set(&msg, ignition::math::Vector3d(value, 0, 0));
+  for (int i = 0; i < values.size(); i++)
+    msg.add_data(values[i]);
 
   // Send the message
   pub->Publish(msg);

@@ -1,7 +1,0 @@
-package vector_message_type.msgs;
-import "vector3d.proto";
-
-message ControlVector
-{
-  required std::vector<gazebo.msgs.Vector3d>   controlvector  = 1;
-}
