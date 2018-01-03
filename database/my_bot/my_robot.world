@@ -19,6 +19,8 @@
       <!-- Attach the plugin to this model -->
       <plugin name="launch_control" filename="../../launch_plugin/build/liblaunch_plugin.so">
       </plugin>
+      <plugin name="data_publisher" filename="../../data_publisher_plugin/build/libdata_publisher.so">
+      </plugin>
     </model>
 
   </world>
