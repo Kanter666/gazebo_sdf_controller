@@ -54,7 +54,7 @@ namespace gazebo
 
       std::cout << "Name: " << this->model->GetName();
       // Create a topic name
-      std::string topicName = "~/" + this->model->GetName() + "/control"; 
+      std::string topicName = "~/" + this->model->GetName() + "/control_vel"; 
 
       // Subscribe to the topic, and register a callback
        this->sub = this->node->Subscribe(topicName, 
@@ -75,10 +75,10 @@ namespace gazebo
     /// only use the x component.
     private: void OnMsg(ConstGzString_VPtr &msg)
     {
-      std::cerr << "Not enough commands for every joint \n" << msg->data_size(); 
       if(msg->data_size() < this->joints.size()){
       	std::cerr << "Not enough commands for every joint \n"; 
       }else{
+        std::cerr << "There are enough commands for joints, number of commands: " << msg->data_size() << "\n"; 
       	for (int i = 0; i < this->joints.size(); i++) 
       	  this->SetVelocity(std::stod (msg->data(i)), i);
       }

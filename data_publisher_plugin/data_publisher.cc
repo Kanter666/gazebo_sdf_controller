@@ -47,8 +47,10 @@ namespace gazebo
 
       // Get values for every joint
       for (int i = 0; i < joints.size(); i++){
-      	joints_pos.add_data(boost::lexical_cast<std::string>(this->joints[i]->GetAngle(1).Degree()));
+      	joints_pos.add_data(boost::lexical_cast<std::string>(this->joints[i]->GetAngle(0).Radian()));
       	joints_vel.add_data(boost::lexical_cast<std::string>(this->joints[i]->GetVelocity(0)));
+      	std::cerr << "Joint "<<i<<" has joint pos " << boost::lexical_cast<std::string>((int) this->joints[i]->GetAngle(1).Degree() % 360) << " and velocity "<< boost::lexical_cast<std::string>(this->joints[i]->GetVelocity(0)) <<"\n"; 
+
       } 
 
       // Send the message

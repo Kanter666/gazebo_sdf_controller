@@ -2,3 +2,5 @@
 launch_plugin/build/
 
 control_plugin/build/
+
+data_publisher_plugin/build/
