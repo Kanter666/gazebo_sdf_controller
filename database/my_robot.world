@@ -13,13 +13,13 @@
     <!-- A testing model that includes the Velodyne sensor model -->
     <model name="my_robot">
       <include>
-        <uri>./my_robot</uri>
+        <uri>./database/my_robot</uri>
       </include>
 
       <!-- Attach the plugin to this model -->
-      <plugin name="launch_control" filename="../../launch_plugin/build/liblaunch_plugin.so">
+      <plugin name="launch_control" filename="./launch_plugin/build/liblaunch_plugin.so">
       </plugin>
-      <plugin name="data_publisher" filename="../../data_publisher_plugin/build/libdata_publisher.so">
+      <plugin name="data_publisher" filename="./data_publisher_plugin/build/libdata_publisher.so">
       </plugin>
     </model>
 
