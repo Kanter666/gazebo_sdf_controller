@@ -1,35 +1,45 @@
-from subprocess import run
-from time import sleep
-
-from multiprocessing import Process
+import os
+import threading
 import sys
 sys.path.insert(0, './control_plugin/build')
-import publisher
+from publisher import Interface
+from time import sleep
+	
 
+def run_gazebo():
+	print("Starting gazebo")
+	os.system("gazebo ./database/"+robot_name+".world")
 
-def moveForward():
-	print("inside move forward")
-	sleep(5)
-	joints_velocities = publisher.getJointsVel("my_robot")
-	print("joint velocities {}".format(joints_velocities))
-	print("inside move forward")
-	publisher.publishVector("~/my_robot/control", ["2.", "2."])
-	print("inside move forward")
-	sleep(5)
-	joints_velocities = publisher.getJointsVel("my_robot")
-	print("after 2 seconds {}".format(joints_velocities))
-	publisher.publishVector("~/my_robot/control", ["0.", "0."])
-	sleep(5)
-	print("stopping {}".format(publisher.getJointsVel("my_robot")))
+thread1 = threading.Thread(target=run_gazebo)
+thread1.daemon = True
+thread1.start()
+robot_name = "my_robot"
 
-def launchGazebo():
-	# launch gazebo world
-	print("inside launch gazebo")
-	print("./database/"+robot+".world")
-	run(["gazebo", "./database/"+robot+".world"])
+print("Waiting for gazebo to load")
+sleep(10)
 
-robot = "my_robot"
-p1 = Process(target = moveForward)
-p1.start()
-p2 = Process(target = launchGazebo)
-p2.start()
+print("Starting robot interface")
+robot = Interface(robot_name)
+
+print("joint velocities: {}  model position: {}"
+	.format(robot.getJointsVel(), robot.getModelPose())
+	)
+
+print("Setting joints velocities to [1., 1.], and waiting 5 seconds")
+robot.setJointsVel(["1.", "1."])
+sleep(5)
+
+print("joint velocities: {}  model position: {}"
+	.format(robot.getJointsVel(), robot.getModelPose())
+	)
+
+print("Setting joints velocities to [0., 0.], and waiting 5 seconds")
+robot.setJointsVel(["0.", "0."])
+sleep(5)
+
+print("joint velocities: {}  model position: {}"
+	.format(robot.getJointsVel(), robot.getModelPose())
+	)
+
+print("Example run finished - press ENTER to end")	
+input()
